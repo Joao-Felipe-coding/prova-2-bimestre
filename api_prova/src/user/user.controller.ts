@@ -11,16 +11,12 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { CreateUserDTO, LoginDTO } from './user.dto';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Usuários')
 @Controller('user')
 export class UserController {
   constructor(@Inject('USER_SERVICE') private userClient: ClientProxy) {}
 
   @Post('create')
-  @ApiOperation({ summary: 'Cria um novo usuário' })
-  @ApiBody({ type: CreateUserDTO })
   async create_user(@Body() userDto: CreateUserDTO) {
     const result = await firstValueFrom(
       this.userClient.send({ cmd: 'create_user' }, userDto),
@@ -37,7 +33,6 @@ export class UserController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todos os usuários' })
   async get_all_users() {
     const result = await firstValueFrom(
       this.userClient.send({ cmd: 'get_all_users' }, {}),
@@ -49,7 +44,6 @@ export class UserController {
   }
 
   @Get(':matricula')
-  @ApiOperation({ summary: 'Consulta usuário por matrícula' })
   async get_user(@Param('matricula') matricula: string) {
     const result = await firstValueFrom(
       this.userClient.send({ cmd: 'get_user' }, matricula),
@@ -65,8 +59,6 @@ export class UserController {
   }
 
   @Post('login')
-  @ApiOperation({ summary: 'Realiza login do usuário' })
-  @ApiBody({ type: LoginDTO })
   async login(@Body() loginDto: LoginDTO) {
     const result = await firstValueFrom(
       this.userClient.send({ cmd: 'login' }, loginDto),
