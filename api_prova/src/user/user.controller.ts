@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Inject,
+  Param,
   Post,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -32,6 +34,34 @@ export class UserController {
 
     return {
       message: 'Usuário criado com sucesso!',
+      data: result,
+    };
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Lista todos os usuários' })
+  async get_all_users() {
+    const result = await firstValueFrom(
+      this.userClient.send({ cmd: 'get_all_users' }, {}),
+    );
+
+    return {
+      data: result,
+    };
+  }
+
+  @Get(':matricula')
+  @ApiOperation({ summary: 'Consulta usuário por matrícula' })
+  async get_user(@Param('matricula') matricula: string) {
+    const result = await firstValueFrom(
+      this.userClient.send({ cmd: 'get_user' }, matricula),
+    );
+
+    if (result.error) {
+      throw new HttpException(result.error, HttpStatus.NOT_FOUND);
+    }
+
+    return {
       data: result,
     };
   }
