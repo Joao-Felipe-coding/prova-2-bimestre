@@ -16,9 +16,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('Usuários')
 @Controller('user')
 export class UserController {
-  constructor(
-    @Inject('USER_SERVICE') private userClient: ClientProxy,
-  ) {}
+  constructor(@Inject('USER_SERVICE') private userClient: ClientProxy) {}
 
   @Post('create')
   @ApiOperation({ summary: 'Cria um novo usuário' })
