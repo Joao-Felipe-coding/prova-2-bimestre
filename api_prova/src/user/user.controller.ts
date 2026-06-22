@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { CreateUserDTO } from './user.dto';
+import { CreateUserDTO, LoginDTO } from './user.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Usuários')
@@ -32,6 +32,24 @@ export class UserController {
 
     return {
       message: 'Usuário criado com sucesso!',
+      data: result,
+    };
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'Realiza login do usuário' })
+  @ApiBody({ type: LoginDTO })
+  async login(@Body() loginDto: LoginDTO) {
+    const result = await firstValueFrom(
+      this.userClient.send({ cmd: 'login' }, loginDto),
+    );
+
+    if (result.error) {
+      throw new HttpException(result.error, HttpStatus.UNAUTHORIZED);
+    }
+
+    return {
+      message: 'Login realizado com sucesso!',
       data: result,
     };
   }
