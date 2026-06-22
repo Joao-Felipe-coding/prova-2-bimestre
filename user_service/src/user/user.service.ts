@@ -21,6 +21,25 @@ export class UserService {
     });
   }
 
+  async get_user(matricula: string) {
+    const user = await this.user.findOne({
+      where: { matricula },
+      attributes: { exclude: ['senha'] },
+    });
+
+    if (!user) {
+      return { error: 'Usuário não encontrado' };
+    }
+
+    return user;
+  }
+
+  async get_all_users() {
+    return this.user.findAll({
+      attributes: { exclude: ['senha'] },
+    });
+  }
+
   async login(data: LoginDTO) {
     const user = await this.user.findOne({
       where: { matricula: data.matricula },
