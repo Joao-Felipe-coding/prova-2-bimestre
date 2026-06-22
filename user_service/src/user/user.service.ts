@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
-import { CreateUserDTO } from './user.dto';
+import { CreateUserDTO, LoginDTO } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -19,5 +19,29 @@ export class UserService {
       matricula: data.matricula,
       senha: hash,
     });
+  }
+
+  async login(data: LoginDTO) {
+    const user = await this.user.findOne({
+      where: { matricula: data.matricula },
+    });
+
+    if (!user) {
+      return { error: 'Matrícula não encontrada' };
+    }
+
+    const senhaValida = await bcrypt.compare(data.senha, user.senha);
+
+    if (!senhaValida) {
+      return { error: 'Senha inválida' };
+    }
+
+    return {
+      id: user.id,
+      nome: user.nome,
+      cpf: user.cpf,
+      telefone: user.telefone,
+      matricula: user.matricula,
+    };
   }
 }
